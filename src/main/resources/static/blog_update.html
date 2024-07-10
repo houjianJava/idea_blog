@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日记编辑页</title>
+
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/edit.css">
+    <link rel="stylesheet" href="blog-editormd/css/editormd.css" />
+
+</head>
+
+<body>
+    <div class="nav">
+        <img src="pic/tx1.jpg" alt="">
+        <span class="blog-title">我的日记系统</span>
+        <div class="space"></div>
+        <a class="nav-span" href="blog_list.html">主页</a>
+        <a class="nav-span" href="blog_edit.html">写日记</a>
+        <a class="nav-span" href="#" onclick="logout()">注销</a>
+    </div>
+    <div class="content-edit">
+        <div class="push">
+            <input type="hidden" id="blogId">
+            <input type="text" name="" id="title">
+            <input type="button" value="更新日记" id="submit" onclick="submit()">
+        </div>
+        <!-- markdown 插件 html代码 -->
+        <div id="editor">
+            <textarea style="display:none;" id="content">##在这里写下一篇日记</textarea>
+        </div>
+    </div>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="blog-editormd/editormd.min.js"></script>
+    <script src="js/common.js"></script>
+    <script type="text/javascript">
+
+       /* $(function () {
+            var editor = editormd("editor", {
+                width  : "100%",
+                height : "550px",
+                path: "blog-editormd/lib/",
+
+            });
+        });*/
+        
+        function submit() {
+           $.ajax({
+              type: "post",
+              url:"/blog/update" ,
+               data:{
+                  id:$("#blogId").val(),
+                   title:$("#title").val(),
+                   content:$("#content").val()
+               },
+               SUCCESS:function (result){
+                   if (result.code=="SUCCESS" && result.data){
+                       location.href = "blog_list.html";
+                   }else {
+                       alert(result.errMsg);
+                   }
+               },
+               error:function (error){
+                   if (error != null && error.status == 401){
+                       location.href = "blog_login.html";
+                   }
+               }
+           });
+        }
+        function getBlogInfo() {
+            $.ajax({
+                type:"get",
+                url:"/blog/getBlogDetail"+location.search,
+                SUCCESS:function (result){
+                    if (result.code=="SUCCESS" && result.data!=null){
+                        var blog = result.data;
+                        $("#blogId").val(blog.id);
+                        $("#title").val(blog.title);
+                        //$("#content").val(blog.content);
+                        editormd("editor",{
+                            width:"100%",
+                            height:"550px",
+                            path:"blog-editormd/lib/",
+                            onload:function (){
+                                this.watch();
+                                this.setMarkdown(blog.content);
+                            }
+                        });
+                    }else{
+                        alert(result.errMsg)
+                    }
+                },
+                error:function (error){
+                    if (error != null && error.status == 401){
+                        location.href = "blog_login.html";
+                    }
+                }
+            });
+        }
+        getBlogInfo();
+    </script>
+</body>
+
+</html>

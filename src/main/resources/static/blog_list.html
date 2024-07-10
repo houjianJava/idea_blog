@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日记列表页</title>
+
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/list.css">
+
+</head>
+<body>
+    <div class="nav">
+        <img src="pic/tx1.jpg" alt="">
+        <span class="blog-title">我的日记系统</span>
+        <div class="space"></div>
+        <a class="nav-span" href="blog_list.html">主页</a>
+        <a class="nav-span" href="blog_edit.html">写日记</a>
+        <a class="nav-span" href="#" onclick="logout()">注销</a>
+    </div>
+
+    <div class="container">
+        <div class="left">
+            <div class="card">
+                <img src="pic/89e449480a752b260c4238ca9b643b49.jpg" alt="">
+                <h3>侯健</h3>
+                <a href="#">GitHub 地址</a>
+                <div class="row">
+                    <span>文章</span>
+                    <span>分类</span>
+                </div>
+                <div class="row">
+                    <span>0</span>
+                    <span>0</span>
+                </div>
+            </div>
+        </div>
+        <div class="right">
+        </div>
+    </div>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+
+        $.ajax({
+            type:"get",
+            url:"blog/getList",
+
+            success:function (result){
+                if (result.code=="SUCCESS"){
+                    var blogs = result.data;
+                    var finalHtml = "";
+                    for (var blog of blogs) {
+                        finalHtml +='<div class="blog">';
+                        finalHtml +='<div class="title">'+blog.title+'</div>';
+                        finalHtml +='<div class="date">'+blog.createTime+'</div>';
+                        finalHtml +='<a class="detail" href="blog_detail.html?blogId ='+blog.id+'">查看全文</a>';
+                        finalHtml +='</div>';
+                    }
+                    $(".container .right").html(finalHtml);
+                }
+            }
+        });
+       /* $.ajax({
+            type: "get",
+            url: "/user/getUserInfo",
+            SUCCESS:function (result){
+                if (result.code="SUCCESS" && result.data!=null){
+                    var userInfo = result.data;
+                    $(".left.card h3").text(userInfo.username);
+                    $(".left.card a").attr("href",userInfo.githubUrl);
+                }else{
+                    alert(result.errMsg);
+                }
+            },
+            error:function (err){
+                if (err!=null && error.status==401){
+                    location.href = "blog_login.html";
+                }
+            }
+        });*/
+        getUserInfo("/user/getUserInfo");
+    </script>
+</body>
+</html>
